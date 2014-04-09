@@ -7,7 +7,7 @@ now_f = strftime("%Y-%m-%d %H:%M:%S", now)
 
 #logging config
 timestamp = strftime("%Y-%m-%d-%H:%M:%S")
-logging_dir = os.path.join(os.path.dirname(__file__), 'logs/')
+#logging_dir = os.path.join(os.path.dirname(__file__), 'logs/')
 
 #delivery info
 server = "delivery.plos.org"
@@ -16,6 +16,7 @@ user = "web"
 password = None
 
 local_work_area = os.path.join(os.path.dirname(__file__), "workarea/")
+
 
 #Email settings
 # server settings
@@ -33,4 +34,4 @@ email_password = "stuff"
 
 # email recipient setting, multiple addresses should be separated
 # by commas ["jlabarba@plos.org", "jharney@plos.org"]
-email_to = ["kbrandt@plos.org"]
+email_to = ["webproduction@plos.org"]
