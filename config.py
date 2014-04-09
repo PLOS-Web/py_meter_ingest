@@ -34,4 +34,4 @@ email_password = "stuff"
 
 # email recipient setting, multiple addresses should be separated
 # by commas ["jlabarba@plos.org", "jharney@plos.org"]
-email_to = ["kbrandt@plos.org"]
+email_to = ["webproduction@plos.org"]
