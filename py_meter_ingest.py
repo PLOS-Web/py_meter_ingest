@@ -13,10 +13,11 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
-# Create instance of Rhyno to use for ingesting/publishing, point it to production host.
-r = api.Rhyno(host='http://api.plosjournals.org/v1/')
 
 if __name__ == '__main__':
+
+    # Create instance of Rhyno to use for ingesting/publishing, point it to production host.
+    r = api.Rhyno(host='http://api.plosjournals.org/v1/')
 
     ingested=[]
     failed_ingest={}
@@ -34,13 +35,16 @@ if __name__ == '__main__':
 
     # Send emails of ingestion results.
     # First create message body from dict that email will accept.
-    message = 'Ingested:\n\n'
-    for doi in ingested:
-        message += doi + '\n'
-    message += '\nIngest Errors:\n'
-    for key in failed_ingest.keys():
-        message += key + ': ' + failed_ingest[key] + '\n'
-    py_meter_ingest_email.send_mail(message, 'Ingest Results')
+    try:
+        message = 'Ingested:\n\n'
+        for doi in ingested:
+            message += doi + '\n'
+        message += '\nIngest Errors:\n'
+        for key in failed_ingest.keys():
+            message += key + ': ' + failed_ingest[key] + '\n'
+        py_meter_ingest_email.send_mail(message, 'Ingest Results')
+    except Exception, e:
+        logger.error("Error sending Ingest Results email, "+str(e))
 
 
     failed_publish = {}
@@ -51,12 +55,13 @@ if __name__ == '__main__':
             r.production_publish(doi)
         except Exception, e:
             failed_publish[doi] = str(e)
-
-    # Send email of failed-to-publish articles if any exist.
-    if len(failed_publish) > 1:
-        pub_message_errors = 'Publish Errors:\n\n'
-        for key in failed_publish.keys():
-            pub_message_errors += key + ': ' + failed_publish[key] + '\n'
-        py_meter_ingest_email.send_mail(message, 'Publish Errors')
-
+    try:
+        # Send email of failed-to-publish articles if any exist.
+        if len(failed_publish) > 1:
+            pub_message_errors = 'Publish Errors:\n\n'
+            for key in failed_publish.keys():
+                pub_message_errors += key + ': ' + failed_publish[key] + '\n'
+            py_meter_ingest_email.send_mail(message, 'Publish Errors')
+    except Exception, e:
+        logger.error("Error sending Publish Errors email, "+str(e))
 
