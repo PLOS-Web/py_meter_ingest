@@ -1,4 +1,5 @@
-#! /usr/bin/env python
+#! /var/local/scripts/production/py_meter_ingest/py_meter_ingest/env/bin/python
+# Is that correct above?
 
 import api
 import logging
@@ -6,7 +7,7 @@ import py_meter_ingest_email
 
 logger = logging.getLogger('')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('py_meter_ingest.log')
+fh = logging.FileHandler('/var/local/scripts/production/py_meter_ingest/py_meter_ingest/py_meter_ingest.log')
 fh.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -36,12 +37,12 @@ if __name__ == '__main__':
     # Send emails of ingestion results.
     # First create message body from dict that email will accept.
     try:
-        message = 'Ingested:\n\n'
-        for doi in ingested:
-            message += doi + '\n'
-        message += '\nIngest Errors:\n'
+        message = 'Ingest Errors:\n'
         for key in failed_ingest.keys():
             message += key + ': ' + failed_ingest[key] + '\n'
+        message += '\nIngested:\n'
+        for doi in ingested:
+            message += doi + '\n'
         py_meter_ingest_email.send_mail(message, 'Ingest Results')
     except Exception, e:
         logger.error("Error sending Ingest Results email, "+str(e))
@@ -53,15 +54,17 @@ if __name__ == '__main__':
         doi = '10.1371/journal.'+article[:-4]
         try:
             r.production_publish(doi)
+            logger.info("Published and syndicated " + str(doi))
         except Exception, e:
             failed_publish[doi] = str(e)
+            logger.error("Failed to pub " + str(doi) + ", error is: " + str(e))
     try:
         # Send email of failed-to-publish articles if any exist.
-        if len(failed_publish) > 1:
+        if len(failed_publish) >= 1:
             pub_message_errors = 'Publish Errors:\n\n'
             for key in failed_publish.keys():
                 pub_message_errors += key + ': ' + failed_publish[key] + '\n'
-            py_meter_ingest_email.send_mail(message, 'Publish Errors')
+            py_meter_ingest_email.send_mail(pub_message_errors, 'Publish Errors')
     except Exception, e:
         logger.error("Error sending Publish Errors email, "+str(e))
 
