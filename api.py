@@ -1,6 +1,6 @@
 import json
 import requests
-import rhyno_utils
+import utils
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class Rhyno(object):
         '''
         r = requests.get(self.host + '/ingestibles/', verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("GET /ingestibles/", r))
+            print(utils.report("GET /ingestibles/", r))
         return json.loads(r.content)
 
     def ingest(self, doi, force_reingest=None, verbose=False):
@@ -60,7 +60,7 @@ class Rhyno(object):
             payload['force_reingest'] = True
         r = requests.post(self.host + '/ingestibles', data=payload, verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("POST /ingestibles/ %s" % pretty_dict_repr(payload), r))
+            print(utils.report("POST /ingestibles/ %s" % pretty_dict_repr(payload), r))
 
         self.handle_error_codes(r)
         return r.content
@@ -94,14 +94,14 @@ class Rhyno(object):
     def get_metadata(self, doi, verbose=False):
         r = requests.get(self.host + '/articles/' + doi, verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("GET /articles/%s" % doi, r))
+            print(utils.report("GET /articles/%s" % doi, r))
         self.handle_error_codes(r)        
         return json.loads(r.content)
 
     def _get_state(self, doi, verbose=False):
         r = requests.get(self.host + '/articles/%s?state' % doi, verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("GET /articles/%s?state" % doi, r))
+            print(utils.report("GET /articles/%s?state" % doi, r))
         self.handle_error_codes(r)
         return json.loads(r.content)
     
@@ -133,7 +133,7 @@ class Rhyno(object):
 
         r = requests.patch(self.host + '/articles/%s' % doi, data=json.dumps(payload), verify=self.verify_ssl)
         if verbose:
-            print(rhynoutils.report("PATCH /articles/%s" % doi, r))
+            print(utils.report("PATCH /articles/%s" % doi, r))
         self.handle_error_codes(r) 
         return json.loads(r.content)
 
@@ -149,14 +149,14 @@ class Rhyno(object):
     def get_journals(self, verbose=False):
         r = requests.get(self.host + "/journals", verify=self.verify_ssl)
         if verbose:
-            print(rhynoutils.report("GET /journals", r))
+            print(utils.report("GET /journals", r))
         self.handle_error_codes(r)
         return json.loads(r.content)
 
     def read_journal(self, journal_key, verbose=False):
         r = requests.get(self.host + "/journals/%s" % journal_key, verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("GET /journals/%s" % journal_key, r))
+            print(utils.report("GET /journals/%s" % journal_key, r))
         self.handle_error_codes(r)
         return json.loads(r.content)
 
@@ -168,14 +168,14 @@ class Rhyno(object):
         }
         r = requests.post(self.host + "/journals/%s" % journal_key, data=json.dumps(payload), verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("POST /journals/%s" % journal_key, r))
+            print(utils.report("POST /journals/%s" % journal_key, r))
         self.handle_error_codes(r)
         return r.content
 
     def get_volume(self, volume_uri, verbose=False):
         r = requests.get(self.host + "/volumes/%s" % volume_uri, verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("GET /volume/%s" % volume_uri, r))
+            print(utils.report("GET /volume/%s" % volume_uri, r))
         self.handle_error_codes(r)
         return json.loads(r.content)
 
@@ -188,7 +188,7 @@ class Rhyno(object):
         }
         r = requests.post(self.host + "/volumes/%s" % volume_uri, data=json.dumps(payload), verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("POST /volumes/%s" % volume_uri, r))
+            print(utils.report("POST /volumes/%s" % volume_uri, r))
         self.handle_error_codes(r)
         return r.content
 
@@ -202,6 +202,6 @@ class Rhyno(object):
         }
         r = requests.patch(self.host + "/issues/%s" % issue_uri, data=json.dumps(payload), verify=self.verify_ssl)
         if verbose:
-            print(rhyno_utils.report("POST /issues/%s" % issue_uri, r))
+            print(utils.report("POST /issues/%s" % issue_uri, r))
         self.handle_error_codes(r)
         return r.content
