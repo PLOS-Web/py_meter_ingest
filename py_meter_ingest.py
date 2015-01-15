@@ -26,7 +26,7 @@ if __name__ == '__main__':
     for article in r.ingestibles():
         if article[-4:] == '.zip':
             try:
-                r.ingest(article, force_reingest=True)
+                r.ingest(article)
                 ingested.append(str(article))
                 logger.info('Ingested ' + str(article) + ' on production server')
             except Exception, e:
